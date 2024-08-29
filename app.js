@@ -1,7 +1,3 @@
-// Note: We're not using import statements here due to in-browser limitations
-// const React = window.React;
-// const { useState, useEffect } = React;
-
 const initialWorkoutData = [
   {
     day: "Day 1: Upper Body",
@@ -61,19 +57,17 @@ const WorkoutTracker = () => {
   }, []);
 
   const saveWorkout = (day, exerciseName, field, value) => {
-    const newCompletedWorkouts = {
-      ...completedWorkouts,
-      [currentDate]: {
-        ...completedWorkouts[currentDate],
-        [day]: {
-          ...completedWorkouts[currentDate]?.[day],
-          [exerciseName]: {
-            ...completedWorkouts[currentDate]?.[day]?.[exerciseName],
-            [field]: value
-          }
-        }
-      }
-    };
+    const newCompletedWorkouts = Object.assign({}, completedWorkouts);
+    if (!newCompletedWorkouts[currentDate]) {
+      newCompletedWorkouts[currentDate] = {};
+    }
+    if (!newCompletedWorkouts[currentDate][day]) {
+      newCompletedWorkouts[currentDate][day] = {};
+    }
+    if (!newCompletedWorkouts[currentDate][day][exerciseName]) {
+      newCompletedWorkouts[currentDate][day][exerciseName] = {};
+    }
+    newCompletedWorkouts[currentDate][day][exerciseName][field] = value;
     setCompletedWorkouts(newCompletedWorkouts);
     localStorage.setItem('workoutData', JSON.stringify(newCompletedWorkouts));
   };
@@ -139,7 +133,10 @@ const WorkoutTracker = () => {
                   <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
                     <input
                       type="checkbox"
-                      checked={completedWorkouts[currentDate]?.[day.day]?.[exercise.name]?.completed || false}
+                      checked={completedWorkouts[currentDate] && 
+                               completedWorkouts[currentDate][day.day] && 
+                               completedWorkouts[currentDate][day.day][exercise.name] && 
+                               completedWorkouts[currentDate][day.day][exercise.name].completed || false}
                       onChange={(e) => saveWorkout(day.day, exercise.name, 'completed', e.target.checked)}
                     />
                   </td>
@@ -151,10 +148,6 @@ const WorkoutTracker = () => {
       ))}
     </div>
   );
-};
-
-// Render the app
-ReactDOM.render(<WorkoutTracker />, document.getElementById('root'));
 };
 
 ReactDOM.render(<WorkoutTracker />, document.getElementById('root'));
