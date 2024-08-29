@@ -1,3 +1,7 @@
+// Note: We're not using import statements here due to in-browser limitations
+// const React = window.React;
+// const { useState, useEffect } = React;
+
 const initialWorkoutData = [
   {
     day: "Day 1: Upper Body",
@@ -147,6 +151,10 @@ const WorkoutTracker = () => {
       ))}
     </div>
   );
+};
+
+// Render the app
+ReactDOM.render(<WorkoutTracker />, document.getElementById('root'));
 };
 
 ReactDOM.render(<WorkoutTracker />, document.getElementById('root'));
