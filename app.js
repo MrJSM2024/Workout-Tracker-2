@@ -1,47 +1,5 @@
 const initialWorkoutData = [
-  {
-    day: "Day 1: Upper Body",
-    exercises: [
-      { name: "Push-ups (on Knees or Incline)", sets: 2, reps: 8, weight: "Body weight" },
-      { name: "Bent over Dumbbell Rows", sets: 3, reps: 10, weight: "8lb dumbbells" },
-      { name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells" },
-      { name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight" },
-      { name: "Seated Band Rows", sets: 3, reps: 10, weight: "Green band w/handles 10/25lb feet" },
-      { name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold" },
-      { name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold" }
-    ]
-  },
-  { day: "Day 2: Rest", exercises: [] },
-  {
-    day: "Day 3: Lower Body",
-    exercises: [
-      { name: "Squats chair height", sets: 3, reps: 8, weight: "Body weight" },
-      { name: "Bulgarian Split Squat", sets: 2, reps: 8, weight: "Body weight" },
-      { name: "Romanian Deadlifts", sets: 3, reps: 10, weight: "8lb dumbbells" },
-      { name: "Calf Raises", sets: 3, reps: 8, weight: "Body weight" },
-      { name: "Shoulders External Rotation", sets: 3, reps: 8, weight: "Red Band" },
-      { name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight" },
-      { name: "Planks", sets: 3, reps: 1, weight: "15 sec" },
-      { name: "Seated Band Rows", sets: 3, reps: 10, weight: "Red double band w/handles 15/35lb feet" },
-      { name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold" },
-      { name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold" }
-    ]
-  },
-  { day: "Day 4: Rest", exercises: [] },
-  {
-    day: "Day 5: Upper Body",
-    exercises: [
-      { name: "Pull-ups (modified as needed)", sets: 3, reps: 8, weight: "Body weight" },
-      { name: "Skull Crushers (Lying)", sets: 3, reps: 10, weight: "8lb dumbbells" },
-      { name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells" },
-      { name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight" },
-      { name: "Seated Band Rows", sets: 3, reps: 10, weight: "Light band" },
-      { name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold" },
-      { name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold" }
-    ]
-  },
-  { day: "Day 6: Rest", exercises: [] },
-  { day: "Day 7: Rest", exercises: [] }
+  // ... (keep your existing workout data)
 ];
 
 const WorkoutTracker = () => {
@@ -73,9 +31,16 @@ const WorkoutTracker = () => {
   };
 
   const updateExercise = (dayIndex, exerciseIndex, field, value) => {
-    const newWorkoutData = [...workoutData];
+    const newWorkoutData = workoutData.slice();
     newWorkoutData[dayIndex].exercises[exerciseIndex][field] = value;
     setWorkoutData(newWorkoutData);
+  };
+
+  const isExerciseCompleted = (day, exerciseName) => {
+    return completedWorkouts[currentDate] &&
+           completedWorkouts[currentDate][day] &&
+           completedWorkouts[currentDate][day][exerciseName] &&
+           completedWorkouts[currentDate][day][exerciseName].completed;
   };
 
   return (
@@ -133,10 +98,7 @@ const WorkoutTracker = () => {
                   <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
                     <input
                       type="checkbox"
-                      checked={completedWorkouts[currentDate] && 
-                               completedWorkouts[currentDate][day.day] && 
-                               completedWorkouts[currentDate][day.day][exercise.name] && 
-                               completedWorkouts[currentDate][day.day][exercise.name].completed || false}
+                      checked={isExerciseCompleted(day.day, exercise.name)}
                       onChange={(e) => saveWorkout(day.day, exercise.name, 'completed', e.target.checked)}
                     />
                   </td>
@@ -148,6 +110,9 @@ const WorkoutTracker = () => {
       ))}
     </div>
   );
+};
+
+ReactDOM.render(React.createElement(WorkoutTracker), document.getElementById('root'));
 };
 
 ReactDOM.render(<WorkoutTracker />, document.getElementById('root'));
