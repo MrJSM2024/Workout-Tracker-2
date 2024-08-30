@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
 const initialWorkoutData = [
-  // ... (keep your existing initialWorkoutData as is)
+  {
+    day: "Day 1: Upper Body",
+    date: new Date().toISOString().split('T')[0],
+    exercises: [
+      { id: 1, name: "Push-ups (on Knees or Incline)", sets: 2, reps: 8, weight: "Body weight", notes: "" },
+      { id: 2, name: "Bent over Dumbbell Rows", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
+      { id: 3, name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
+      { id: 4, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
+      { id: 5, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Green band w/handles 10/25lb feet", notes: "" },
+      { id: 6, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
+      { id: 7, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
+    ]
+  },
+  // ... (keep the rest of your initialWorkoutData as is, just add the notes field to each exercise)
 ];
 
 const WorkoutTracker = () => {
@@ -23,12 +36,19 @@ const WorkoutTracker = () => {
   }, []);
 
   const saveWorkout = (day, exercise, completed) => {
-    const newCompletedWorkouts = { ...completedWorkouts };
-    if (!newCompletedWorkouts[day.date]) newCompletedWorkouts[day.date] = {};
-    if (!newCompletedWorkouts[day.date][day.day]) newCompletedWorkouts[day.date][day.day] = {};
-    if (!newCompletedWorkouts[day.date][day.day][exercise.id]) newCompletedWorkouts[day.date][day.day][exercise.id] = {};
-    newCompletedWorkouts[day.date][day.day][exercise.id].completed = completed;
-    
+    const newCompletedWorkouts = {
+      ...completedWorkouts,
+      [day.date]: {
+        ...completedWorkouts[day.date],
+        [day.day]: {
+          ...completedWorkouts[day.date]?.[day.day],
+          [exercise.id]: {
+            ...completedWorkouts[day.date]?.[day.day]?.[exercise.id],
+            completed
+          }
+        }
+      }
+    };
     setCompletedWorkouts(newCompletedWorkouts);
     localStorage.setItem('workoutData', JSON.stringify(newCompletedWorkouts));
 
@@ -112,115 +132,115 @@ const WorkoutTracker = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>{trackerTitle}</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">{trackerTitle}</h1>
       <input
         type="text"
         value={trackerTitle}
         onChange={(e) => setTrackerTitle(e.target.value)}
-        style={{ marginBottom: '10px', padding: '5px', width: '300px' }}
+        className="mb-4 p-2 border rounded"
       />
-      <button onClick={copyToClipboard} style={{ marginLeft: '10px', padding: '5px 10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
+      <button onClick={copyToClipboard} className="ml-4 p-2 bg-blue-500 text-white rounded">
         Copy Workout Data
       </button>
       {recentlyDeleted.length > 0 && (
-        <button onClick={undoDelete} style={{ marginLeft: '10px', padding: '5px 10px', backgroundColor: '#f44336', color: 'white', border: 'none', cursor: 'pointer' }}>
+        <button onClick={undoDelete} className="ml-4 p-2 bg-yellow-500 text-white rounded">
           Undo Delete
         </button>
       )}
       {workoutData.map((day, dayIndex) => (
-        <div key={day.day} style={{ marginBottom: '30px' }}>
+        <div key={day.day} className="mb-8">
           <input
             type="text"
             value={day.day}
             onChange={(e) => updateDayTitle(dayIndex, e.target.value)}
-            style={{ fontSize: '20px', fontWeight: 'semibold', marginBottom: '10px', padding: '5px' }}
+            className="text-xl font-semibold mb-2 p-2 border rounded"
           />
           <input
             type="date"
             value={day.date}
             onChange={(e) => updateDate(dayIndex, e.target.value)}
-            style={{ marginLeft: '10px', padding: '5px' }}
+            className="ml-4 p-2 border rounded"
           />
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+          <table className="w-full border-collapse border">
             <thead>
               <tr>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Exercise</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>S</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>R</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Weight</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Done</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Notes</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Order</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Del</th>
+                <th className="border p-2">Exercise</th>
+                <th className="border p-2">S</th>
+                <th className="border p-2">R</th>
+                <th className="border p-2">Weight</th>
+                <th className="border p-2">Done</th>
+                <th className="border p-2">Notes</th>
+                <th className="border p-2">Order</th>
+                <th className="border p-2">Del</th>
               </tr>
             </thead>
             <tbody>
               {day.exercises.map((exercise, exerciseIndex) => (
                 <tr key={exercise.id}>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <input
                       type="text"
                       value={exercise.name}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'name', e.target.value)}
-                      style={{ width: '100%' }}
+                      className="w-48"
                     />
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <input
                       type="number"
                       min="1"
                       max="100"
                       value={exercise.sets}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'sets', e.target.value)}
-                      style={{ width: '40px' }}
+                      className="w-12"
                     />
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <input
                       type="number"
                       min="1"
                       max="100"
                       value={exercise.reps}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'reps', e.target.value)}
-                      style={{ width: '40px' }}
+                      className="w-12"
                     />
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <input
                       type="text"
                       value={exercise.weight}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'weight', e.target.value)}
-                      style={{ width: '100px' }}
+                      className="w-24"
                     />
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <input
                       type="checkbox"
-                      checked={completedWorkouts[day.date] && completedWorkouts[day.date][day.day] && completedWorkouts[day.date][day.day][exercise.id] && completedWorkouts[day.date][day.day][exercise.id].completed || false}
+                      checked={completedWorkouts[day.date]?.[day.day]?.[exercise.id]?.completed || false}
                       onChange={(e) => saveWorkout(day, exercise, e.target.checked)}
                     />
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <input
                       type="text"
-                      value={exercise.notes || ''}
+                      value={exercise.notes}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'notes', e.target.value)}
-                      style={{ width: '100px' }}
+                      className="w-32"
                     />
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <button onClick={() => moveExercise(dayIndex, exerciseIndex, 'up')}>↑</button>
                     <button onClick={() => moveExercise(dayIndex, exerciseIndex, 'down')}>↓</button>
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                  <td className="border p-2">
                     <button onClick={() => deleteExercise(dayIndex, exercise.id)}>Del</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <button onClick={() => addExercise(dayIndex)} style={{ marginTop: '10px', padding: '5px 10px', backgroundColor: '#008CBA', color: 'white', border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => addExercise(dayIndex)} className="mt-2 p-2 bg-green-500 text-white rounded">
             Add Exercise
           </button>
         </div>
