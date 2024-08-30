@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const initialWorkoutData = [
-  {
-    day: "Day 1: Upper Body",
-    date: new Date().toISOString().split('T')[0],
-    exercises: [
-      { id: 1, name: "Push-ups (on Knees or Incline)", sets: 2, reps: 8, weight: "Body weight", notes: "" },
-      { id: 2, name: "Bent over Dumbbell Rows", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
-      { id: 3, name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
-      { id: 4, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
-      { id: 5, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Green band w/handles 10/25lb feet", notes: "" },
-      { id: 6, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
-      { id: 7, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
-    ]
-  },
-  // ... (keep the rest of your initialWorkoutData as is, just add the notes field to each exercise)
-];
+// ... keep your initialWorkoutData as is, but add a notes field to each exercise ...
 
 const WorkoutTracker = () => {
   const [workoutData, setWorkoutData] = useState(initialWorkoutData);
@@ -36,55 +21,15 @@ const WorkoutTracker = () => {
   }, []);
 
   const saveWorkout = (day, exercise, completed) => {
-    const newCompletedWorkouts = {
-      ...completedWorkouts,
-      [day.date]: {
-        ...completedWorkouts[day.date],
-        [day.day]: {
-          ...completedWorkouts[day.date]?.[day.day],
-          [exercise.id]: {
-            ...completedWorkouts[day.date]?.[day.day]?.[exercise.id],
-            completed
-          }
-        }
-      }
-    };
-    setCompletedWorkouts(newCompletedWorkouts);
-    localStorage.setItem('workoutData', JSON.stringify(newCompletedWorkouts));
-
-    if (completed) {
-      const newLog = [
-        ...exerciseLog,
-        {
-          date: day.date,
-          day: day.day,
-          exercise: exercise.name,
-          sets: exercise.sets,
-          reps: exercise.reps,
-          weight: exercise.weight,
-          notes: exercise.notes,
-          order: day.exercises.findIndex(e => e.id === exercise.id) + 1
-        }
-      ];
-      setExerciseLog(newLog);
-      localStorage.setItem('exerciseLog', JSON.stringify(newLog));
-    }
+    // ... keep this function as is ...
   };
 
   const updateExercise = (dayIndex, exerciseIndex, field, value) => {
-    const newWorkoutData = [...workoutData];
-    newWorkoutData[dayIndex].exercises[exerciseIndex][field] = value;
-    setWorkoutData(newWorkoutData);
+    // ... keep this function as is ...
   };
 
   const moveExercise = (dayIndex, currentIndex, direction) => {
-    const newWorkoutData = [...workoutData];
-    const exercises = newWorkoutData[dayIndex].exercises;
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex >= 0 && newIndex < exercises.length) {
-      [exercises[currentIndex], exercises[newIndex]] = [exercises[newIndex], exercises[currentIndex]];
-      setWorkoutData(newWorkoutData);
-    }
+    // ... keep this function as is ...
   };
 
   const addExercise = (dayIndex) => {
@@ -113,15 +58,11 @@ const WorkoutTracker = () => {
   };
 
   const updateDate = (dayIndex, newDate) => {
-    const newWorkoutData = [...workoutData];
-    newWorkoutData[dayIndex].date = newDate;
-    setWorkoutData(newWorkoutData);
+    // ... keep this function as is ...
   };
 
   const updateDayTitle = (dayIndex, newTitle) => {
-    const newWorkoutData = [...workoutData];
-    newWorkoutData[dayIndex].day = newTitle;
-    setWorkoutData(newWorkoutData);
+    // ... keep this function as is ...
   };
 
   const copyToClipboard = () => {
@@ -224,7 +165,7 @@ const WorkoutTracker = () => {
                   <td className="border p-2">
                     <input
                       type="text"
-                      value={exercise.notes}
+                      value={exercise.notes || ''}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'notes', e.target.value)}
                       className="w-32"
                     />
