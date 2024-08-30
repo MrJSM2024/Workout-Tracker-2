@@ -1,6 +1,53 @@
 import React, { useState, useEffect } from 'react';
 
-// ... keep your initialWorkoutData as is, but add a notes field to each exercise ...
+const initialWorkoutData = [
+  {
+    day: "Day 1: Upper Body",
+    date: new Date().toISOString().split('T')[0],
+    exercises: [
+      { id: 1, name: "Push-ups (on Knees or Incline)", sets: 2, reps: 8, weight: "Body weight", notes: "" },
+      { id: 2, name: "Bent over Dumbbell Rows", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
+      { id: 3, name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
+      { id: 4, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
+      { id: 5, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Green band w/handles 10/25lb feet", notes: "" },
+      { id: 6, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
+      { id: 7, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
+    ]
+  },
+  { day: "Day 2: Rest", date: new Date().toISOString().split('T')[0], exercises: [] },
+  {
+    day: "Day 3: Lower Body",
+    date: new Date().toISOString().split('T')[0],
+    exercises: [
+      { id: 1, name: "Squats chair height", sets: 3, reps: 8, weight: "Body weight", notes: "" },
+      { id: 2, name: "Bulgarian Split Squat", sets: 2, reps: 8, weight: "Body weight", notes: "" },
+      { id: 3, name: "Romanian Deadlifts", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
+      { id: 4, name: "Calf Raises", sets: 3, reps: 8, weight: "Body weight", notes: "" },
+      { id: 5, name: "Shoulders External Rotation", sets: 3, reps: 8, weight: "Red Band", notes: "" },
+      { id: 6, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
+      { id: 7, name: "Planks", sets: 3, reps: 1, weight: "15 sec", notes: "" },
+      { id: 8, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Red double band w/handles 15/35lb feet", notes: "" },
+      { id: 9, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
+      { id: 10, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
+    ]
+  },
+  { day: "Day 4: Rest", date: new Date().toISOString().split('T')[0], exercises: [] },
+  {
+    day: "Day 5: Upper Body",
+    date: new Date().toISOString().split('T')[0],
+    exercises: [
+      { id: 1, name: "Pull-ups (modified as needed)", sets: 3, reps: 8, weight: "Body weight", notes: "" },
+      { id: 2, name: "Skull Crushers (Lying)", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
+      { id: 3, name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
+      { id: 4, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
+      { id: 5, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Light band", notes: "" },
+      { id: 6, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
+      { id: 7, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
+    ]
+  },
+  { day: "Day 6: Rest", date: new Date().toISOString().split('T')[0], exercises: [] },
+  { day: "Day 7: Rest", date: new Date().toISOString().split('T')[0], exercises: [] }
+];
 
 const WorkoutTracker = () => {
   const [workoutData, setWorkoutData] = useState(initialWorkoutData);
@@ -21,15 +68,55 @@ const WorkoutTracker = () => {
   }, []);
 
   const saveWorkout = (day, exercise, completed) => {
-    // ... keep this function as is ...
+    const newCompletedWorkouts = {
+      ...completedWorkouts,
+      [day.date]: {
+        ...(completedWorkouts[day.date] || {}),
+        [day.day]: {
+          ...(completedWorkouts[day.date] && completedWorkouts[day.date][day.day] || {}),
+          [exercise.id]: {
+            ...(completedWorkouts[day.date] && completedWorkouts[day.date][day.day] && completedWorkouts[day.date][day.day][exercise.id] || {}),
+            completed
+          }
+        }
+      }
+    };
+    setCompletedWorkouts(newCompletedWorkouts);
+    localStorage.setItem('workoutData', JSON.stringify(newCompletedWorkouts));
+
+    if (completed) {
+      const newLog = [
+        ...exerciseLog,
+        {
+          date: day.date,
+          day: day.day,
+          exercise: exercise.name,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          weight: exercise.weight,
+          notes: exercise.notes,
+          order: day.exercises.findIndex(e => e.id === exercise.id) + 1
+        }
+      ];
+      setExerciseLog(newLog);
+      localStorage.setItem('exerciseLog', JSON.stringify(newLog));
+    }
   };
 
   const updateExercise = (dayIndex, exerciseIndex, field, value) => {
-    // ... keep this function as is ...
+    const newWorkoutData = [...workoutData];
+    newWorkoutData[dayIndex].exercises[exerciseIndex][field] = value;
+    setWorkoutData(newWorkoutData);
   };
 
   const moveExercise = (dayIndex, currentIndex, direction) => {
-    // ... keep this function as is ...
+    const newWorkoutData = [...workoutData];
+    const exercises = newWorkoutData[dayIndex].exercises;
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex >= 0 && newIndex < exercises.length) {
+      [exercises[currentIndex], exercises[newIndex]] = [exercises[newIndex], exercises[currentIndex]];
+      setWorkoutData(newWorkoutData);
+    }
   };
 
   const addExercise = (dayIndex) => {
@@ -58,11 +145,15 @@ const WorkoutTracker = () => {
   };
 
   const updateDate = (dayIndex, newDate) => {
-    // ... keep this function as is ...
+    const newWorkoutData = [...workoutData];
+    newWorkoutData[dayIndex].date = newDate;
+    setWorkoutData(newWorkoutData);
   };
 
   const updateDayTitle = (dayIndex, newTitle) => {
-    // ... keep this function as is ...
+    const newWorkoutData = [...workoutData];
+    newWorkoutData[dayIndex].day = newTitle;
+    setWorkoutData(newWorkoutData);
   };
 
   const copyToClipboard = () => {
@@ -73,121 +164,88 @@ const WorkoutTracker = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">{trackerTitle}</h1>
+    <div style={{ padding: '20px' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>{trackerTitle}</h1>
       <input
         type="text"
         value={trackerTitle}
         onChange={(e) => setTrackerTitle(e.target.value)}
-        className="mb-4 p-2 border rounded"
+        style={{ marginBottom: '10px', padding: '5px', width: '300px' }}
       />
-      <button onClick={copyToClipboard} className="ml-4 p-2 bg-blue-500 text-white rounded">
+      <button onClick={copyToClipboard} style={{ marginLeft: '10px', padding: '5px 10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
         Copy Workout Data
       </button>
       {recentlyDeleted.length > 0 && (
-        <button onClick={undoDelete} className="ml-4 p-2 bg-yellow-500 text-white rounded">
+        <button onClick={undoDelete} style={{ marginLeft: '10px', padding: '5px 10px', backgroundColor: '#f44336', color: 'white', border: 'none', cursor: 'pointer' }}>
           Undo Delete
         </button>
       )}
       {workoutData.map((day, dayIndex) => (
-        <div key={day.day} className="mb-8">
+        <div key={day.day} style={{ marginBottom: '30px' }}>
           <input
             type="text"
             value={day.day}
             onChange={(e) => updateDayTitle(dayIndex, e.target.value)}
-            className="text-xl font-semibold mb-2 p-2 border rounded"
+            style={{ fontSize: '20px', fontWeight: 'semibold', marginBottom: '10px', padding: '5px' }}
           />
           <input
             type="date"
             value={day.date}
             onChange={(e) => updateDate(dayIndex, e.target.value)}
-            className="ml-4 p-2 border rounded"
+            style={{ marginLeft: '10px', padding: '5px' }}
           />
-          <table className="w-full border-collapse border">
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
             <thead>
               <tr>
-                <th className="border p-2">Exercise</th>
-                <th className="border p-2">S</th>
-                <th className="border p-2">R</th>
-                <th className="border p-2">Weight</th>
-                <th className="border p-2">Done</th>
-                <th className="border p-2">Notes</th>
-                <th className="border p-2">Order</th>
-                <th className="border p-2">Del</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Exercise</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>S</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>R</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Weight</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Done</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Notes</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Order</th>
+                <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Del</th>
               </tr>
             </thead>
             <tbody>
               {day.exercises.map((exercise, exerciseIndex) => (
                 <tr key={exercise.id}>
-                  <td className="border p-2">
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     <input
                       type="text"
                       value={exercise.name}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'name', e.target.value)}
-                      className="w-48"
+                      style={{ width: '100%' }}
                     />
                   </td>
-                  <td className="border p-2">
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     <input
                       type="number"
                       min="1"
                       max="100"
                       value={exercise.sets}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'sets', e.target.value)}
-                      className="w-12"
+                      style={{ width: '40px' }}
                     />
                   </td>
-                  <td className="border p-2">
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     <input
                       type="number"
                       min="1"
                       max="100"
                       value={exercise.reps}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'reps', e.target.value)}
-                      className="w-12"
+                      style={{ width: '40px' }}
                     />
                   </td>
-                  <td className="border p-2">
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     <input
                       type="text"
                       value={exercise.weight}
                       onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'weight', e.target.value)}
-                      className="w-24"
+                      style={{ width: '100px' }}
                     />
                   </td>
-                  <td className="border p-2">
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     <input
-                      type="checkbox"
-                      checked={completedWorkouts[day.date]?.[day.day]?.[exercise.id]?.completed || false}
-                      onChange={(e) => saveWorkout(day, exercise, e.target.checked)}
-                    />
-                  </td>
-                  <td className="border p-2">
-                    <input
-                      type="text"
-                      value={exercise.notes || ''}
-                      onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'notes', e.target.value)}
-                      className="w-32"
-                    />
-                  </td>
-                  <td className="border p-2">
-                    <button onClick={() => moveExercise(dayIndex, exerciseIndex, 'up')}>↑</button>
-                    <button onClick={() => moveExercise(dayIndex, exerciseIndex, 'down')}>↓</button>
-                  </td>
-                  <td className="border p-2">
-                    <button onClick={() => deleteExercise(dayIndex, exercise.id)}>Del</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={() => addExercise(dayIndex)} className="mt-2 p-2 bg-green-500 text-white rounded">
-            Add Exercise
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export default WorkoutTracker;
+                      type="
