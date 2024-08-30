@@ -1,52 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const initialWorkoutData = [
-  {
-    day: "Day 1: Upper Body",
-    date: new Date().toISOString().split('T')[0],
-    exercises: [
-      { id: 1, name: "Push-ups (on Knees or Incline)", sets: 2, reps: 8, weight: "Body weight", notes: "" },
-      { id: 2, name: "Bent over Dumbbell Rows", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
-      { id: 3, name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
-      { id: 4, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
-      { id: 5, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Green band w/handles 10/25lb feet", notes: "" },
-      { id: 6, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
-      { id: 7, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
-    ]
-  },
-  { day: "Day 2: Rest", date: new Date().toISOString().split('T')[0], exercises: [] },
-  {
-    day: "Day 3: Lower Body",
-    date: new Date().toISOString().split('T')[0],
-    exercises: [
-      { id: 1, name: "Squats chair height", sets: 3, reps: 8, weight: "Body weight", notes: "" },
-      { id: 2, name: "Bulgarian Split Squat", sets: 2, reps: 8, weight: "Body weight", notes: "" },
-      { id: 3, name: "Romanian Deadlifts", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
-      { id: 4, name: "Calf Raises", sets: 3, reps: 8, weight: "Body weight", notes: "" },
-      { id: 5, name: "Shoulders External Rotation", sets: 3, reps: 8, weight: "Red Band", notes: "" },
-      { id: 6, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
-      { id: 7, name: "Planks", sets: 3, reps: 1, weight: "15 sec", notes: "" },
-      { id: 8, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Red double band w/handles 15/35lb feet", notes: "" },
-      { id: 9, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
-      { id: 10, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
-    ]
-  },
-  { day: "Day 4: Rest", date: new Date().toISOString().split('T')[0], exercises: [] },
-  {
-    day: "Day 5: Upper Body",
-    date: new Date().toISOString().split('T')[0],
-    exercises: [
-      { id: 1, name: "Pull-ups (modified as needed)", sets: 3, reps: 8, weight: "Body weight", notes: "" },
-      { id: 2, name: "Skull Crushers (Lying)", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
-      { id: 3, name: "Hammer Curls", sets: 3, reps: 10, weight: "8lb dumbbells", notes: "" },
-      { id: 4, name: "Prone Y, W, T Raises", sets: 2, reps: 15, weight: "No weight", notes: "" },
-      { id: 5, name: "Seated Band Rows", sets: 3, reps: 10, weight: "Light band", notes: "" },
-      { id: 6, name: "Flex Craneo Cervical (Chin Tuck)", sets: 3, reps: 6, weight: "20% flex, 6 sec hold", notes: "" },
-      { id: 7, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
-    ]
-  },
-  { day: "Day 6: Rest", date: new Date().toISOString().split('T')[0], exercises: [] },
-  { day: "Day 7: Rest", date: new Date().toISOString().split('T')[0], exercises: [] }
+  // ... (keep your existing initialWorkoutData as is)
 ];
 
 const WorkoutTracker = () => {
@@ -68,19 +23,12 @@ const WorkoutTracker = () => {
   }, []);
 
   const saveWorkout = (day, exercise, completed) => {
-    const newCompletedWorkouts = {
-      ...completedWorkouts,
-      [day.date]: {
-        ...(completedWorkouts[day.date] || {}),
-        [day.day]: {
-          ...(completedWorkouts[day.date] && completedWorkouts[day.date][day.day] || {}),
-          [exercise.id]: {
-            ...(completedWorkouts[day.date] && completedWorkouts[day.date][day.day] && completedWorkouts[day.date][day.day][exercise.id] || {}),
-            completed
-          }
-        }
-      }
-    };
+    const newCompletedWorkouts = { ...completedWorkouts };
+    if (!newCompletedWorkouts[day.date]) newCompletedWorkouts[day.date] = {};
+    if (!newCompletedWorkouts[day.date][day.day]) newCompletedWorkouts[day.date][day.day] = {};
+    if (!newCompletedWorkouts[day.date][day.day][exercise.id]) newCompletedWorkouts[day.date][day.day][exercise.id] = {};
+    newCompletedWorkouts[day.date][day.day][exercise.id].completed = completed;
+    
     setCompletedWorkouts(newCompletedWorkouts);
     localStorage.setItem('workoutData', JSON.stringify(newCompletedWorkouts));
 
@@ -248,4 +196,37 @@ const WorkoutTracker = () => {
                   </td>
                   <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                     <input
-                      type="
+                      type="checkbox"
+                      checked={completedWorkouts[day.date] && completedWorkouts[day.date][day.day] && completedWorkouts[day.date][day.day][exercise.id] && completedWorkouts[day.date][day.day][exercise.id].completed || false}
+                      onChange={(e) => saveWorkout(day, exercise, e.target.checked)}
+                    />
+                  </td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                    <input
+                      type="text"
+                      value={exercise.notes || ''}
+                      onChange={(e) => updateExercise(dayIndex, exerciseIndex, 'notes', e.target.value)}
+                      style={{ width: '100px' }}
+                    />
+                  </td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                    <button onClick={() => moveExercise(dayIndex, exerciseIndex, 'up')}>↑</button>
+                    <button onClick={() => moveExercise(dayIndex, exerciseIndex, 'down')}>↓</button>
+                  </td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+                    <button onClick={() => deleteExercise(dayIndex, exercise.id)}>Del</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={() => addExercise(dayIndex)} style={{ marginTop: '10px', padding: '5px 10px', backgroundColor: '#008CBA', color: 'white', border: 'none', cursor: 'pointer' }}>
+            Add Exercise
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default WorkoutTracker;
