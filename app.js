@@ -1,4 +1,4 @@
-const initialWorkoutData = [
+var initialWorkoutData = [
   {
     day: "Day 1: Upper Body",
     date: new Date().toISOString().split('T')[0],
@@ -12,29 +12,29 @@ const initialWorkoutData = [
       { id: 7, name: "Rot Cervical con mano (both sides)", sets: 3, reps: 6, weight: "20% strength, 6 sec hold", notes: "" }
     ]
   },
-  // ... (keep the rest of your initialWorkoutData as is, just add the notes field to each exercise)
+  // Add other days here...
 ];
 
-const WorkoutTracker = () => {
-  const [workoutData, setWorkoutData] = React.useState(initialWorkoutData);
-  const [completedWorkouts, setCompletedWorkouts] = React.useState({});
-  const [trackerTitle, setTrackerTitle] = React.useState("Comprehensive Flexible Workout Tracker");
-  const [exerciseLog, setExerciseLog] = React.useState([]);
-  const [recentlyDeleted, setRecentlyDeleted] = React.useState([]);
+var WorkoutTracker = function() {
+  var [workoutData, setWorkoutData] = React.useState(initialWorkoutData);
+  var [completedWorkouts, setCompletedWorkouts] = React.useState({});
+  var [trackerTitle, setTrackerTitle] = React.useState("Comprehensive Flexible Workout Tracker");
+  var [exerciseLog, setExerciseLog] = React.useState([]);
+  var [recentlyDeleted, setRecentlyDeleted] = React.useState([]);
 
-  React.useEffect(() => {
-    const savedData = localStorage.getItem('workoutData');
+  React.useEffect(function() {
+    var savedData = localStorage.getItem('workoutData');
     if (savedData) {
       setCompletedWorkouts(JSON.parse(savedData));
     }
-    const savedLog = localStorage.getItem('exerciseLog');
+    var savedLog = localStorage.getItem('exerciseLog');
     if (savedLog) {
       setExerciseLog(JSON.parse(savedLog));
     }
   }, []);
 
-  const saveWorkout = (day, exercise, completed) => {
-    const newCompletedWorkouts = Object.assign({}, completedWorkouts);
+  var saveWorkout = function(day, exercise, completed) {
+    var newCompletedWorkouts = Object.assign({}, completedWorkouts);
     if (!newCompletedWorkouts[day.date]) {
       newCompletedWorkouts[day.date] = {};
     }
@@ -49,7 +49,7 @@ const WorkoutTracker = () => {
     localStorage.setItem('workoutData', JSON.stringify(newCompletedWorkouts));
 
     if (completed) {
-      const newLog = exerciseLog.concat([{
+      var newLog = exerciseLog.concat([{
         date: day.date,
         day: day.day,
         exercise: exercise.name,
@@ -64,63 +64,63 @@ const WorkoutTracker = () => {
     }
   };
 
-  const updateExercise = (dayIndex, exerciseIndex, field, value) => {
-    const newWorkoutData = workoutData.slice();
+  var updateExercise = function(dayIndex, exerciseIndex, field, value) {
+    var newWorkoutData = workoutData.slice();
     newWorkoutData[dayIndex].exercises[exerciseIndex][field] = value;
     setWorkoutData(newWorkoutData);
   };
 
-  const moveExercise = (dayIndex, currentIndex, direction) => {
-    const newWorkoutData = workoutData.slice();
-    const exercises = newWorkoutData[dayIndex].exercises;
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+  var moveExercise = function(dayIndex, currentIndex, direction) {
+    var newWorkoutData = workoutData.slice();
+    var exercises = newWorkoutData[dayIndex].exercises;
+    var newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (newIndex >= 0 && newIndex < exercises.length) {
-      const temp = exercises[currentIndex];
+      var temp = exercises[currentIndex];
       exercises[currentIndex] = exercises[newIndex];
       exercises[newIndex] = temp;
       setWorkoutData(newWorkoutData);
     }
   };
 
-  const addExercise = (dayIndex) => {
-    const newWorkoutData = workoutData.slice();
-    const newId = Math.max.apply(null, newWorkoutData[dayIndex].exercises.map(function(e) { return e.id; }).concat([0])) + 1;
+  var addExercise = function(dayIndex) {
+    var newWorkoutData = workoutData.slice();
+    var newId = Math.max.apply(null, newWorkoutData[dayIndex].exercises.map(function(e) { return e.id; }).concat([0])) + 1;
     newWorkoutData[dayIndex].exercises.push({ id: newId, name: "New Exercise", sets: 3, reps: 10, weight: "Body weight", notes: "" });
     setWorkoutData(newWorkoutData);
   };
 
-  const deleteExercise = (dayIndex, exerciseId) => {
-    const newWorkoutData = workoutData.slice();
-    const deletedExercise = newWorkoutData[dayIndex].exercises.find(function(e) { return e.id === exerciseId; });
+  var deleteExercise = function(dayIndex, exerciseId) {
+    var newWorkoutData = workoutData.slice();
+    var deletedExercise = newWorkoutData[dayIndex].exercises.find(function(e) { return e.id === exerciseId; });
     setRecentlyDeleted(recentlyDeleted.concat([{ dayIndex: dayIndex, exercise: deletedExercise }]));
     newWorkoutData[dayIndex].exercises = newWorkoutData[dayIndex].exercises.filter(function(e) { return e.id !== exerciseId; });
     setWorkoutData(newWorkoutData);
   };
 
-  const undoDelete = () => {
+  var undoDelete = function() {
     if (recentlyDeleted.length > 0) {
-      const lastDeleted = recentlyDeleted[recentlyDeleted.length - 1];
-      const newWorkoutData = workoutData.slice();
+      var lastDeleted = recentlyDeleted[recentlyDeleted.length - 1];
+      var newWorkoutData = workoutData.slice();
       newWorkoutData[lastDeleted.dayIndex].exercises.push(lastDeleted.exercise);
       setWorkoutData(newWorkoutData);
       setRecentlyDeleted(recentlyDeleted.slice(0, -1));
     }
   };
 
-  const updateDate = (dayIndex, newDate) => {
-    const newWorkoutData = workoutData.slice();
+  var updateDate = function(dayIndex, newDate) {
+    var newWorkoutData = workoutData.slice();
     newWorkoutData[dayIndex].date = newDate;
     setWorkoutData(newWorkoutData);
   };
 
-  const updateDayTitle = (dayIndex, newTitle) => {
-    const newWorkoutData = workoutData.slice();
+  var updateDayTitle = function(dayIndex, newTitle) {
+    var newWorkoutData = workoutData.slice();
     newWorkoutData[dayIndex].day = newTitle;
     setWorkoutData(newWorkoutData);
   };
 
-  const copyToClipboard = () => {
-    const data = JSON.stringify({ completedWorkouts: completedWorkouts, exerciseLog: exerciseLog }, null, 2);
+  var copyToClipboard = function() {
+    var data = JSON.stringify({ completedWorkouts: completedWorkouts, exerciseLog: exerciseLog }, null, 2);
     navigator.clipboard.writeText(data).then(function() {
       alert("Workout data copied to clipboard!");
     });
